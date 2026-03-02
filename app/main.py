@@ -1,25 +1,26 @@
 import os
+from pathlib import Path
 
 
 def move_file(command: str) -> None:
     command_log = command.split(" ")
-    exact_com, origin_file, created_path = command_log
-    *directories, new_filename = created_path.split("/")
 
-    if len(command_log) == 3 and exact_com == "mv":
-        if len(directories) == 0:
+    if len(command_log) == 3 and command.startswith("mv"):
+        exact_com, origin_file, created_path = command_log
+        dir_part, new_filename = os.path.dirname(created_path), os.path.basename(created_path)
+        directories = list(Path(dir_part).parts)
+
+        if new_filename is None:
+            os.rename(origin_file, created_path + origin_file)
+
+        elif len(directories) == 0:
             os.rename(origin_file, new_filename)
 
         elif len(directories) >= 1:
-
             for i in range(1, len(directories) + 1):
                 dire = os.path.join(*directories[:i])
                 if not os.path.exists(dire):
                     os.makedirs(dire)
                 continue
 
-            with (open(origin_file, "r") as o_file,
-                  open(created_path, "w") as n_file):
-                n_file.write(o_file.read())
-
-            os.remove(origin_file)
+            os.rename(origin_file, created_path)
