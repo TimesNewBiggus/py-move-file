@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 
 def move_file(command: str) -> None:
@@ -7,21 +6,18 @@ def move_file(command: str) -> None:
 
     if len(command_log) == 3 and command.startswith("mv"):
         command_name, origin_file, created_path = command_log
-        (dir_part,
-         new_filename) = (os.path.dirname(created_path),
-                          os.path.basename(created_path))
-        directories = list(Path(dir_part).parts)
 
-        if new_filename == "":
-            os.rename(origin_file, created_path + origin_file)
+        if os.path.isdir(origin_file):
+            final_path = os.path.join(created_path, origin_file)
+        else:
+            final_path = created_path
 
-        elif dir_part == ".":
-            os.rename(origin_file, os.getcwd() + origin_file)
+        dir_part = os.path.dirname(final_path)
+        if dir_part:
+            os.makedirs(name=dir_part, exist_ok=True)
 
-        elif dir_part == "":
-            os.rename(origin_file, new_filename)
+        with (open(origin_file, "r") as or_file,
+              open(final_path, "w") as mov_file):
+            mov_file.write(or_file.read())
 
-        elif len(directories) >= 1:
-            if dir_part:
-                os.makedirs(name=dir_part, exist_ok=True)
-            os.rename(origin_file, created_path)
+        os.remove(origin_file)
