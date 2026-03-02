@@ -8,7 +8,8 @@ def move_file(command: str) -> None:
         command_name, origin_file, created_path = command_log
 
         if os.path.isdir(created_path):
-            final_path = os.path.join(created_path, origin_file)
+            final_path = os.path.join(created_path,
+                                      os.path.basename(origin_file))
         else:
             final_path = created_path
 
