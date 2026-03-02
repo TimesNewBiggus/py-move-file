@@ -7,7 +7,9 @@ def move_file(command: str) -> None:
 
     if len(command_log) == 3 and command.startswith("mv"):
         exact_com, origin_file, created_path = command_log
-        dir_part, new_filename = os.path.dirname(created_path), os.path.basename(created_path)
+        (dir_part,
+         new_filename) = (os.path.dirname(created_path),
+                          os.path.basename(created_path))
         directories = list(Path(dir_part).parts)
 
         if new_filename is None:
